@@ -1,0 +1,10 @@
+.bg-login-gradient {
+    background: radial-gradient(circle at center,
+            rgba(47, 120, 197, 0.9) 0%,
+            rgba(8, 55, 125, 0.95) 40%,
+            rgba(2, 35, 88, 1) 100%),
+        radial-gradient(1000px circle at center,
+            rgba(255, 255, 255, 0.20) 0%,
+            rgba(0, 0, 0, 0) 75%);
+    background-blend-mode: overlay;
+}
