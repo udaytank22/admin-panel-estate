@@ -25,7 +25,7 @@ export default function ModalWrapper({
                   onClick={onClose}
                 />
                 <h2 className="text-xl font-semibold text-[#1A1A1A]">
-                  Ahmedabad Opal-1
+                  {title}
                 </h2>
               </div>
 

@@ -36,7 +36,7 @@ export default function Society() {
   ];
 
   return (
-    <div className="p-6">
+    <div>
       {/* PAGE HEADER */}
       <div className="mb-[30px]">
         <div className="flex items-center gap-4">
