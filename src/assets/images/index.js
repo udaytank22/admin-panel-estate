@@ -13,9 +13,14 @@ import notification from './Notification.svg';
 import add from './addIcon.svg'
 import filter from './filter.svg'
 import leftArrow from './leftArrow.svg'
+import people from './people.svg';
+import building from './buildin.svg';
+import revenue from './revenue.svg'
+import arrow from './arrow.svg'
 
 import rightGradient from "./rightGradient.png";
 import profileImage from './user.png'
+import buildingBanner from './buildingBanner.png'
 
 export const images = {
   logo,
@@ -33,6 +38,11 @@ export const images = {
   add,
   filter,
   leftArrow,
+  people,
+  revenue,
+  building,
+  arrow,
   notification,
-  profileImage
+  profileImage,
+  buildingBanner
 };

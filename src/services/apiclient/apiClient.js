@@ -3,7 +3,7 @@ import axiosRetry from "axios-retry";
 import { API_ENDPOINTS } from "./apiEndpoints";
 
 
-const API_BASEURL = "https://api.estatefacility.com/api/v1/";
+const API_BASEURL = "https://api.estatefacility.com/api/v1";
 
 const PUBLIC_API_ROUTES = [
   API_ENDPOINTS.AUTH.EMAIL_LOGIN,
@@ -75,6 +75,7 @@ const refreshAccessToken = async () => {
 // Request interceptor
 apiClient.interceptors.request.use(
   config => {
+    console.log('config', config)
     if (config.data instanceof FormData) {
       config.headers["Content-Type"] = "multipart/form-data";
     } else {
@@ -82,10 +83,12 @@ apiClient.interceptors.request.use(
     }
 
     if (config.url && !PUBLIC_API_ROUTES.includes(config.url)) {
-      const token = sessionStorage.getItem("userToken");
-      if (token) config.headers["Authorization"] = `Bearer ${token}`;
+      const token = sessionStorage.getItem('userToken');
+      if (token) {
+        config.headers['Authorization'] = `Bearer ${token}`;
+      }
     }
-
+    console.log('config', config)
     return config;
   },
   error => Promise.reject(error)
@@ -96,6 +99,7 @@ apiClient.interceptors.response.use(
   response => response,
   async error => {
     const originalRequest = error.config;
+    console.log('response', originalRequest)
 
     // Handle 401 Auth Error
     if (error.response?.status === 401 && !originalRequest._retry) {
@@ -145,11 +149,29 @@ apiClient.interceptors.response.use(
 export const apiGet = async (url, params = {}) =>
   (await apiClient.get(url, { params })).data;
 
-export const apiPost = async (url, data = {}) =>
-  await apiClient.post(url, data);
+export const apiPost = async (url, data) => {
+  console.log('url', url)
+  console.log('data', data)
+  const isFormData = data instanceof FormData;
 
-export const apiPut = async (url, data = {}) =>
-  await apiClient.put(url, data);
+  return apiClient.post(url, data, {
+    headers: isFormData
+      ? { "Content-Type": "multipart/form-data" }
+      : { "Content-Type": "application/json" },
+    transformRequest: isFormData ? [(d) => d] : undefined
+  });
+};
+
+export const apiPut = async (url, data) => {
+  const isFormData = data instanceof FormData;
+
+  return apiClient.put(url, data, {
+    headers: isFormData
+      ? { "Content-Type": "multipart/form-data" }
+      : { "Content-Type": "application/json" },
+    transformRequest: isFormData ? [(d) => d] : undefined
+  });
+};
 
 export const apiDelete = async url =>
   await apiClient.delete(url);
@@ -168,7 +190,10 @@ export const manualRefreshToken = async () => {
 };
 
 // Token helpers
-export const saveAuthToken = token => sessionStorage.setItem("userToken", token);
+export const saveAuthToken = token => {
+  console.log('usertoken save', token)
+  sessionStorage.setItem("userToken", token)
+}
 
 export const saveRefreshToken = token =>
   sessionStorage.setItem("refreshToken", token);
@@ -187,6 +212,8 @@ export const logout = () => {
   sessionStorage.removeItem("userToken");
   sessionStorage.removeItem("refreshToken");
   sessionStorage.removeItem("userInfo");
+
+  window.location.href = "/login";
 };
 
 

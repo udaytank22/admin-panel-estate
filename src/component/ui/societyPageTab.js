@@ -1,7 +1,6 @@
 import React from "react";
 
-export default function TabsBar({ active, onChange }) {
-  const tabs = ["Dashboard", "Residents", "Staff", "Amenities", "Billing", "Complaints"];
+export default function TabsBar({ active, onChange, tabs }) {
 
   return (
     <div className="w-full bg-white rounded-lg shadow border border-gray-200 p-3">
@@ -25,3 +24,7 @@ export default function TabsBar({ active, onChange }) {
     </div>
   );
 }
+
+
+
+

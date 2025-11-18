@@ -6,6 +6,7 @@ import SaveButton from "../saveButton";
 import CustomFormInput from "../ui/formInput";
 import DropdownComponent from "../ui/dropdownComponent";
 import RadioButton from "../ui/radioButton";
+import UploadFileComponent from "./uploadFileComponent";
 
 export default function AddUserModal({ open, onClose }) {
   const [activeTab, setActiveTab] = useState(0);
@@ -27,6 +28,23 @@ export default function AddUserModal({ open, onClose }) {
   const [documentType, setDocumentType] = useState("");
   const [industry, setIndustry] = useState("");
 
+  // PERSONAL DETAILS STATES
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+
+  const [countryCode, setCountryCode] = useState("+91");
+  const [mobile, setMobile] = useState("");
+
+  const [email, setEmail] = useState("");
+
+  const [block, setBlock] = useState("");
+
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const [profilePhoto, setProfilePhoto] = useState(null);
+  const [document, setDocumentFile] = useState(null);
+
   const tabs = [
     "Personal Details",
     "House Details",
@@ -36,9 +54,8 @@ export default function AddUserModal({ open, onClose }) {
     "Business",
   ];
 
-  // -----------------------------------------
-  // TAB CONTENT
-  // -----------------------------------------
+  const updateField = (key, value) => {};
+
   const renderTabContent = () => {
     const grid = "grid grid-cols-2 gap-6 w-full";
 
@@ -46,31 +63,114 @@ export default function AddUserModal({ open, onClose }) {
       // PERSONAL DETAILS
       case 0:
         return (
-          <div className={grid}>
-            <CustomFormInput label="Full Name" placeholder="Enter full name" />
-
-            <DropdownComponent
-              label="Select Role"
-              options={["Admin", "Member", "Security"]}
-              value={role}
-              onChange={setRole}
+          <div className="grid grid-cols-2 gap-6 w-full">
+            {/* First Name */}
+            <CustomFormInput
+              label="First Name"
+              placeholder="Enter first name"
+              required
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
             />
 
-            <div className="col-span-2">
-              <label className="font-semibold text-[#034175]">Status</label>
-              <div className="flex items-center gap-8 mt-2">
-                <RadioButton
-                  label="Active"
-                  value="Active"
-                  selected={personalStatus}
-                  onChange={setPersonalStatus}
-                />
-                <RadioButton
-                  label="Inactive"
-                  value="Inactive"
-                  selected={personalStatus}
-                  onChange={setPersonalStatus}
-                />
+            {/* Last Name */}
+            <CustomFormInput
+              label="Last Name"
+              placeholder="Enter last name"
+              required
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+            />
+
+            {/* Mobile Number + Email in same row */}
+            <div>
+              <label className="font-semibold text-[#034175]">
+                Mobile Number <span className="text-red-500">*</span>
+              </label>
+
+              <div className="flex items-center gap-3 mt-1">
+                {/* Country Code */}
+                <div className="w-24">
+                  <DropdownComponent
+                    options={["+91", "+1", "+44"]}
+                    value={countryCode}
+                    onChange={setCountryCode}
+                    showFlag
+                  />
+                </div>
+
+                {/* Phone Input */}
+                <div className="flex-1">
+                  <CustomFormInput
+                    placeholder="Enter mobile number"
+                    required
+                    value={mobile}
+                    onChange={(e) => setMobile(e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Email */}
+            <CustomFormInput
+              label="Email"
+              placeholder="Enter email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+
+            {/* Block + Flat */}
+            <DropdownComponent
+              label="Block"
+              options={["A", "B", "C"]}
+              value={block}
+              onChange={(value) => {
+                setBlock(value);
+                setFlat("");
+              }}
+              required
+            />
+
+            <DropdownComponent
+              label="Flat"
+              options={block ? ["101", "102", "103"] : []}
+              value={flat}
+              onChange={setFlat}
+              placeholder={block ? "Select Flat" : "Select Block First"}
+              disabled={!block}
+              required
+            />
+
+            {/* Password */}
+            <CustomFormInput
+              label="Password"
+              placeholder="Enter password"
+              secure
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+
+            {/* Confirm Password */}
+            <CustomFormInput
+              label="Confirm Password"
+              placeholder="Re-enter password"
+              secure
+              required
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+
+            <div className="col-span-2 grid grid-cols-2 gap-6">
+              <div>
+                <div className="flex items-center gap-5 mt-2">
+                  {/* Upload Button */}
+                  <UploadFileComponent
+                    label="Profile Photo"
+                    onChange={(file) => setProfilePhoto(file)}
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -235,10 +335,10 @@ export default function AddUserModal({ open, onClose }) {
               onChange={setDocumentType}
             />
             <div>
-              <label className="font-semibold text-[#034175]">Attachment</label>
-              <div className="border border-dashed rounded-xl text-center py-3 mt-2 text-blue-500 cursor-pointer">
-                Upload Image / PDF
-              </div>
+              <UploadFileComponent
+                label="Attachment"
+                onChange={(file) => updateField("attachment", file)}
+              />
             </div>
           </div>
         );
@@ -292,9 +392,6 @@ export default function AddUserModal({ open, onClose }) {
     }
   };
 
-  // -----------------------------------------
-  // RENDER MODAL
-  // -----------------------------------------
   return (
     <ModalWrapper
       open={open}

@@ -1,8 +1,10 @@
 import { FiBell, FiLogOut, FiSearch } from 'react-icons/fi';
 import { images } from '../../assets/images';
 import { strings } from '../../utils/strings/strings';
+import { logout } from '../../services/apiclient/apiClient';
 
-const Header = ({ onSearch, onLogout }) => {
+const Header = ({ onSearch }) => {
+
   return (
     <header className="w-full h-24 relative bg-white overflow-hidden">
       <div className="left-[1300px] top-[29px] absolute inline-flex justify-start items-center gap-4">
@@ -11,7 +13,7 @@ const Header = ({ onSearch, onLogout }) => {
           <span className="absolute top-[8px] right-[10px] w-2.5 h-2.5 bg-red-600 rounded-full border border-white" />
         </button>
 
-        <button onClick={onLogout} className="p-2 bg-gray-200/40 rounded-[11px] flex items-center gap-2">
+        <button onClick={logout} className="p-2 bg-gray-200/40 rounded-[11px] flex items-center gap-2">
           <FiLogOut size={18} className="text-neutral-800" />
           <span className="text-black text-lg font-normal font-['Inter'] tracking-tight">{strings.logoutBtn}</span>
         </button>
