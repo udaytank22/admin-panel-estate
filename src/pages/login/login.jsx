@@ -5,7 +5,6 @@ import PrimaryButton from "../../component/PrimaryButton";
 import { strings } from "../../utils/strings/strings";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-
 import {
   apiPost,
   saveAuthToken,
@@ -16,6 +15,7 @@ import { API_ENDPOINTS } from "../../services/apiclient/apiEndpoints";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const [errors, setErrors] = useState({
@@ -46,6 +46,7 @@ const Login = () => {
 
   const handleLogin = async () => {
     if (!validate()) return;
+    setIsLoading(true);
 
     try {
       const res = await apiPost(API_ENDPOINTS.AUTH.EMAIL_LOGIN, {
@@ -53,8 +54,10 @@ const Login = () => {
         password,
       });
 
-      saveAuthToken(res.data.access);
-      saveRefreshToken(res.data.refresh);
+      console.log("res", res);
+
+      saveAuthToken(res.data.tokens.access);
+      saveRefreshToken(res.data.tokens.refresh);
 
       sessionStorage.setItem("userInfo", JSON.stringify(res.data.user));
 
@@ -69,6 +72,8 @@ const Login = () => {
         "Invalid email or password";
 
       toast.error(msg);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -119,6 +124,7 @@ const Login = () => {
             title="Login"
             isError={errors.email === "" || errors.password === ""}
             onClick={handleLogin}
+            isLoading={isLoading}
           />
         </div>
       </div>

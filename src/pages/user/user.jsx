@@ -1,40 +1,44 @@
 import { FiEye, FiTrash2 } from "react-icons/fi";
 import { TbCircleOff } from "react-icons/tb";
-import { AiOutlineSearch } from "react-icons/ai";
 import DataTable from "../../component/ui/tabel";
-import { images } from "../../assets/images";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddUserModal from "../../component/formModals/addUserModal";
-import { strings } from "../../utils/strings/strings";
+import { PeopleData } from "../../services/user/userService";
+import { formatString } from "../../utils/strings/stringFormat";
+import ViewUserDetails from "../../component/formModals/viewUserModal";
 
 export default function Users() {
   const [openAddModal, setOpenAddModal] = useState(false);
+  const [openViewModal, setOpenViewModal] = useState(false);
   const [openFilterModal, setOpenFilterModal] = useState(false);
   const [search, setSearch] = useState("");
+  const [userList, setUserList] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
 
-  const userList = [
-    {
-      id: 1,
-      name: "Atash Jain",
-      email: "atash@mail.com",
-      role: "Member",
-      status: "Active",
-    },
-    {
-      id: 2,
-      name: "Raj Patel",
-      email: "raj@mail.com",
-      role: "Member",
-      status: "Inactive",
-    },
-    {
-      id: 3,
-      name: "Mr Roy",
-      email: "roy@mail.com",
-      role: "Security",
-      status: "Active",
-    },
-  ];
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const response = await PeopleData();
+      setUserList(response?.results || []);
+    } catch (error) {
+      console.error("Error loading users:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const formattedUsers = userList.map((user) => ({
+    name: `${user.first_name || ""} ${user.last_name || ""}`.trim(),
+    email: user.email || "-",
+    role: formatString(user.role) || "-",
+    status: user.is_active ? "Active" : "Inactive",
+    raw: user, // (optional) keep full object for actions
+  }));
 
   const columns = [
     { label: "Name", field: "name" },
@@ -61,9 +65,10 @@ export default function Users() {
           {/* REUSABLE DATATABLE */}
           <DataTable
             columns={columns}
-            data={userList.filter((u) =>
-              u.name.toLowerCase().includes(search.toLowerCase())
+            data={formattedUsers.filter((u) =>
+              u?.name?.toLowerCase().includes(search.toLowerCase())
             )}
+            isLoading={loading}
             onSearch={(value) => setSearch(value)}
             onFilter={() => setOpenFilterModal(true)}
             onAdd={() => setOpenAddModal(true)}
@@ -71,7 +76,13 @@ export default function Users() {
             actions={(row) => (
               <div className="flex gap-4 justify-center">
                 <button className="text-black">
-                  <FiEye size={18} />
+                  <FiEye
+                    size={18}
+                    onClick={() => {
+                      setSelectedUser(row.raw);
+                      setOpenViewModal(true);
+                    }}
+                  />
                 </button>
                 <button className="text-black">
                   <TbCircleOff size={18} />
@@ -90,9 +101,11 @@ export default function Users() {
         open={openAddModal}
         onClose={() => setOpenAddModal(false)}
       />
-
-      {/* FILTER MODAL (optional) */}
-      {/* <FilterModal open={openFilterModal} onClose={() => setOpenFilterModal(false)} /> */}
+      <ViewUserDetails
+        open={openViewModal}
+        onClose={() => setOpenViewModal(false)}
+        user={selectedUser}
+      />
     </>
   );
 }

@@ -2,7 +2,6 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "../pages/login/login";
 import Dashboard from "../pages/dashboard/dashboard";
 import ProtectedRoute from "./protectedRouter";
-import SidebarLayout from "./sidebar/sidebar";
 import Society from "../pages/society/society";
 import Announcemnt from "../pages/announcement/announcemnt";
 import Complaint from "../pages/complaints/complaints";
@@ -11,6 +10,9 @@ import MarketPlace from "../pages/marketPlace/marketPlace";
 import Notification from "../pages/notification/notification";
 import Reports from "../pages/reports/reports";
 import Users from "../pages/user/user";
+import Sidebar from "./sidebar/sidebar";
+import SidebarLayout from "./sidebar/SidebarLayout";
+import Booking from "../pages/events/booking";
 
 export default function AppRouter() {
   return (
@@ -19,12 +21,14 @@ export default function AppRouter() {
         <Route path="/login" element={<Login />} />
 
         {/* Protected Routes that use the Sidebar Layout */}
-        <Route element={<SidebarLayout />}>
+        <Route element={<Sidebar />}>
           <Route
             path="/dashboard"
             element={
               <ProtectedRoute>
-                <Dashboard />
+                <SidebarLayout >
+                  <Dashboard />
+                </SidebarLayout>
               </ProtectedRoute>
             }
           />
@@ -89,6 +93,14 @@ export default function AppRouter() {
             element={
               <ProtectedRoute>
                 <Users />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/Booking"
+            element={
+              <ProtectedRoute>
+                <Booking />
               </ProtectedRoute>
             }
           />
